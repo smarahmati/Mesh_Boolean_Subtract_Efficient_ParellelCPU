@@ -53,12 +53,6 @@ def main():
     unique_indices = {original_idx: new_idx for new_idx, original_idx in enumerate(hull.vertices)}
     reindexed_simplices = np.vectorize(unique_indices.get)(hull_simplices)
 
-    # Plot alphashape
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot_trisurf(bound_nodes[:, 0], bound_nodes[:, 1], bound_nodes[:, 2], triangles=reindexed_simplices, cmap=plt.cm.Spectral)
-    plt.show()
-
     # Node Centers
     Node_Parent_e2 = NP[EP[:, 1] - 1, 1:]
     Node_Parent_e3 = NP[EP[:, 2] - 1, 1:]
@@ -81,28 +75,6 @@ def main():
 
     Corresponding_NodesV_Out = np.unique(Selected_Element_Parent_Out[:, 1:])
     Selected_Node_Parent_Out = NP[Corresponding_NodesV_Out - 1]
-
-    # Plot elements
-    fig = plt.figure()
-    ax1 = fig.add_subplot(121, projection='3d')
-    ax1.scatter(Node_Parent_emean[in_shape, 0], Node_Parent_emean[in_shape, 1], Node_Parent_emean[in_shape, 2], c='r')
-    ax1.set_title('Elements inside Micro')
-    ax1.set_xlabel('x(MicroM)')
-    ax1.set_ylabel('y(MicroM)')
-    ax1.set_zlabel('z(MicroM)')
-    ax1.axis('equal')
-    ax1.grid(True)
-
-    ax2 = fig.add_subplot(122, projection='3d')
-    ax2.scatter(Node_Parent_emean[out_shape, 0], Node_Parent_emean[out_shape, 1], Node_Parent_emean[out_shape, 2], c='b')
-    ax2.set_title('Elements outside Micro')
-    ax2.set_xlabel('x(MicroM)')
-    ax2.set_ylabel('y(MicroM)')
-    ax2.set_zlabel('z(MicroM)')
-    ax2.axis('equal')
-    ax2.grid(True)
-
-    plt.show()
 
     # Split the work across multiple processes
     num_cores = os.cpu_count()
@@ -187,6 +159,46 @@ def main():
 
     end_time = time.time()
     print(f"Computation Time: {end_time - start_time} seconds")
+
+    # Ask to plot figures after all computations
+    plot_alphashape = input("Do you want to plot the alphashape figure? (yes/no): ").lower() == 'yes'
+    plot_figure1 = input("Do you want to plot Figure 1 (Elements inside Micro)? (yes/no): ").lower() == 'yes'
+    plot_figure2 = input("Do you want to plot Figure 2 (Elements outside Micro)? (yes/no): ").lower() == 'yes'
+
+    if plot_alphashape:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_trisurf(bound_nodes[:, 0], bound_nodes[:, 1], bound_nodes[:, 2], triangles=reindexed_simplices, cmap=plt.cm.Spectral)
+        ax.set_title('Alphashape Figure')
+        ax.set_xlabel('x(MicroM)')
+        ax.set_ylabel('y(MicroM)')
+        ax.set_zlabel('z(MicroM)')
+        plt.show()
+
+    if plot_figure1 or plot_figure2:
+        fig = plt.figure()
+
+        if plot_figure1:
+            ax1 = fig.add_subplot(121, projection='3d')
+            ax1.scatter(Node_Parent_emean[in_shape, 0], Node_Parent_emean[in_shape, 1], Node_Parent_emean[in_shape, 2], c='r')
+            ax1.set_title('Elements inside Micro')
+            ax1.set_xlabel('x(MicroM)')
+            ax1.set_ylabel('y(MicroM)')
+            ax1.set_zlabel('z(MicroM)')
+            ax1.axis('equal')
+            ax1.grid(True)
+
+        if plot_figure2:
+            ax2 = fig.add_subplot(122, projection='3d')
+            ax2.scatter(Node_Parent_emean[out_shape, 0], Node_Parent_emean[out_shape, 1], Node_Parent_emean[out_shape, 2], c='b')
+            ax2.set_title('Elements outside Micro')
+            ax2.set_xlabel('x(MicroM)')
+            ax2.set_ylabel('y(MicroM)')
+            ax2.set_zlabel('z(MicroM)')
+            ax2.axis('equal')
+            ax2.grid(True)
+
+        plt.show()
 
 if __name__ == '__main__':
     main()
