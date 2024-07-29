@@ -33,12 +33,12 @@ def main():
     SF2 = 0.7
 
     # Estimating Center of Elements for Full Lamina & Micro
-    Center_LaminaP = np.mean(NP[EP[:, 1:], 1:], axis=1)
-    Center_Micro = np.mean(NM[EM[:, 1:], 1:], axis=1)
+    Center_LaminaP = np.mean(NP[EP[:, 1:] - 1, 1:], axis=1)
+    Center_Micro = np.mean(NM[EM[:, 1:] - 1, 1:], axis=1)
 
     # Boundary of Micro
     E = np.unique(EM[:, 1:])
-    Nodes_Surf = NM[E, 1:]
+    Nodes_Surf = NM[E - 1, 1:]
 
     # Handle duplicate nodes and boundaries
     Nodes_Surf, idx = np.unique(Nodes_Surf, axis=0, return_index=True)
@@ -60,10 +60,10 @@ def main():
     plt.show()
 
     # Node Centers
-    Node_Parent_e2 = NP[EP[:, 1], 1:]
-    Node_Parent_e3 = NP[EP[:, 2], 1:]
-    Node_Parent_e4 = NP[EP[:, 3], 1:]
-    Node_Parent_e5 = NP[EP[:, 4], 1:]
+    Node_Parent_e2 = NP[EP[:, 1] - 1, 1:]
+    Node_Parent_e3 = NP[EP[:, 2] - 1, 1:]
+    Node_Parent_e4 = NP[EP[:, 3] - 1, 1:]
+    Node_Parent_e5 = NP[EP[:, 4] - 1, 1:]
 
     Node_Parent_emean = (Node_Parent_e2 + Node_Parent_e3 + Node_Parent_e4 + Node_Parent_e5) / 4
 
@@ -77,10 +77,10 @@ def main():
 
     # Corresponding Nodes
     Corresponding_NodesV_In = np.unique(Selected_Element_Parent_In[:, 1:])
-    Selected_Node_Parent_In = NP[Corresponding_NodesV_In]
+    Selected_Node_Parent_In = NP[Corresponding_NodesV_In - 1]
 
     Corresponding_NodesV_Out = np.unique(Selected_Element_Parent_Out[:, 1:])
-    Selected_Node_Parent_Out = NP[Corresponding_NodesV_Out]
+    Selected_Node_Parent_Out = NP[Corresponding_NodesV_Out - 1]
 
     # Plot elements
     fig = plt.figure()
@@ -130,12 +130,12 @@ def main():
 
     # Nodes & Elements of Lamina Fibers
     ELV_F = np.unique(EP[ENF, 1:])
-    Nodes_Lamina_Fibers = NP[ELV_F]
+    Nodes_Lamina_Fibers = NP[ELV_F - 1]
     Elements_Lamina_Fibers = EP[ENF]
 
     # Nodes & Elements of Neural Tissue
     ELV_N = np.unique(EP[ENN, 1:])
-    Nodes_Neural_Tissue = NP[ELV_N]
+    Nodes_Neural_Tissue = NP[ELV_N - 1]
     Elements_Neural_Tissue = EP[ENN]
 
     scipy.io.savemat('Nodes_Lamina_Fibers.mat', {'Nodes_Lamina_Fibers': Nodes_Lamina_Fibers})
@@ -168,7 +168,7 @@ def main():
 
     Elements = [Elements_D[i, :] for i in range(len(Elements_Lamina_Fibers))]
 
-    Elements_Sets = [{'Name': 'Set1', 'Elements_Type': 'C3D4', 'Elements': list(range(len(Elements_Lamina_Fibers)))}]
+    Elements_Sets = [{'Name': 'Set1', 'Elements_Type': 'C3D8', 'Elements': list(range(len(Elements_Lamina_Fibers)))}]
 
     currentFolder = os.getcwd()
     Filename = os.path.join(currentFolder, 'Solid.inp')
@@ -180,7 +180,7 @@ def main():
 
     Elements = [Elements_D[i, :] for i in range(len(Elements_Neural_Tissue))]
 
-    Elements_Sets = [{'Name': 'Set1', 'Elements_Type': 'C3D4', 'Elements': list(range(len(Elements_Neural_Tissue)))}]
+    Elements_Sets = [{'Name': 'Set1', 'Elements_Type': 'C3D8', 'Elements': list(range(len(Elements_Neural_Tissue)))}]
 
     Filename = os.path.join(currentFolder, 'Fluid.inp')
     Matlab2Abaqus(Nodes, Elements, Elements_Sets, Filename)
